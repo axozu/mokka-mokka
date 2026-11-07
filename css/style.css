@@ -1,0 +1,954 @@
+/* =========================================================
+   Мокка-Мокка — стили сайта
+   Подход mobile-first: сначала пишем стили для телефона,
+   версию для планшета и компьютера добавим на этапе 6.
+   ========================================================= */
+
+
+/* ---------- 0. Шрифт Nunito (файлы в папке fonts/, лицензия OFL — fonts/OFL.txt) ----------
+   Шрифт вариативный: один файл содержит все толщины 400–800.
+   Он разбит на части по алфавитам; unicode-range говорит браузеру,
+   какие символы в каком файле, — скачиваются только нужные части.
+   font-display: swap — пока шрифт грузится, текст виден системным шрифтом. */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../fonts/nunito-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* Расширенная латиница — в ней знак рубля ₽ (U+20BD) */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../fonts/nunito-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Базовая латиница, цифры, знаки препинания, тире и кавычки */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../fonts/nunito-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+/* ---------- 1. Переменные: цвета, шрифт, отступы ----------
+   Задаём значения один раз и используем везде через var(--имя).
+   Чтобы поменять цвет на всём сайте, достаточно исправить его здесь. */
+:root {
+  --color-black: #1A1A1A;        /* основной тёмный: текст, тёмные блоки */
+  --color-dark: #2A2623;         /* карточки на тёмном фоне */
+  --color-beige: #E8DCC8;        /* бежевый: блоки и текст на тёмном */
+  --color-bg: #F5F0E8;           /* светло-бежевый фон страницы */
+  --color-surface: #FBF8F3;      /* карточки на светлом фоне */
+  --color-accent: #7A4A2A;       /* коричневый из логотипа: кнопки, акценты */
+  --color-accent-dark: #5E3820;  /* акцент при наведении */
+  --color-muted: #5C5248;        /* второстепенный текст */
+  --color-line: #DDD2C0;         /* тонкие линии-разделители */
+
+  --font-main: "Nunito", "Segoe UI", Arial, sans-serif;
+
+  --space: 16px;                 /* базовый отступ; остальные — кратные ему */
+  --radius: 12px;                /* скругление углов карточек и кнопок */
+  --header-height: 60px;         /* высота липкой шапки */
+
+  /* Боковой отступ страницы. На телефоне — 16px. На широком экране он растёт так,
+     чтобы содержимое не было шире 1120px и стояло по центру, а фон раздела
+     при этом тянулся на всю ширину. max() выбирает большее из двух значений. */
+  --page-x: max(var(--space), calc((100% - 1120px) / 2));
+}
+
+
+/* ---------- 2. Базовые настройки ---------- */
+
+/* box-sizing: border-box — ширина элемента включает отступы и рамку.
+   Без этого блоки «распирает» и появляется горизонтальная прокрутка. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth; /* плавная прокрутка к разделам по ссылкам-якорям */
+  /* При переходе по якорю оставляем сверху место под липкую шапку,
+     иначе она закроет заголовок раздела */
+  scroll-padding-top: var(--header-height);
+}
+
+/* Людям, у которых в системе отключена анимация, плавная прокрутка не нужна */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-black);
+  background-color: var(--color-bg);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 calc(var(--space) * 0.75);
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 var(--space);
+}
+
+a {
+  color: var(--color-accent);
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none; /* убираем маркеры у списков-карточек */
+}
+
+address {
+  font-style: normal; /* браузер по умолчанию делает адрес курсивом */
+}
+
+
+/* ---------- 3. Разделы: общие отступы ---------- */
+.features,
+.menu,
+.order,
+.promo,
+.contacts {
+  padding: calc(var(--space) * 3) var(--page-x);
+}
+
+
+/* ---------- 4. Кнопки ---------- */
+.button {
+  display: inline-block;
+  padding: 14px 24px;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.button:hover {
+  background-color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+}
+
+/* Вариант кнопки «только рамка» — для второстепенного действия */
+.button--outline {
+  background-color: transparent;
+  border-color: var(--color-beige);
+  color: var(--color-beige);
+}
+
+.button--outline:hover {
+  background-color: var(--color-beige);
+  border-color: var(--color-beige);
+  color: var(--color-black);
+}
+
+/* Видимая рамка при переходе по сайту клавишей Tab (доступность) */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+
+/* ---------- 5. Шапка и мобильное меню ---------- */
+
+/* position: sticky — шапка прокручивается вместе со страницей,
+   пока не упрётся в верх экрана, а дальше «прилипает» к нему.
+   z-index — шапка лежит поверх остального содержимого. */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--space) / 2);
+  min-height: var(--header-height);
+  padding: 8px var(--page-x);
+  background-color: var(--color-black);
+}
+
+.header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-beige);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* У логотипа белый квадратный фон. border-radius: 50% превращает квадрат в круг,
+   и белые углы исчезают — остаётся круглая эмблема */
+.header__logo-img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.nav__list a {
+  color: var(--color-beige);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Кнопка ☰ — три полоски. Без JS она не нужна, поэтому скрыта. */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;   /* 44×44px — минимальный удобный размер для пальца */
+  height: 44px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.burger__line {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--color-beige);
+  transition: transform 0.25s, opacity 0.25s;
+}
+
+/* Меню открыто → полоски складываются в крестик ✕.
+   Ориентируемся на aria-expanded, который выставляет скрипт. */
+.burger[aria-expanded="true"] .burger__line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.burger[aria-expanded="true"] .burger__line:nth-child(2) {
+  opacity: 0;
+}
+
+.burger[aria-expanded="true"] .burger__line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Всё ниже работает, только если JavaScript загрузился (класс .js) --- */
+.js .header {
+  flex-wrap: nowrap;
+}
+
+.js .burger {
+  display: flex;
+}
+
+/* Меню становится выпадающей панелью под шапкой и по умолчанию скрыто */
+.js .nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 8px var(--space) var(--space);
+  background-color: var(--color-black);
+  border-top: 1px solid var(--color-dark);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.js .nav--open {
+  display: block;
+}
+
+.js .nav__list {
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Крупные пункты, удобные для нажатия пальцем */
+.js .nav__list a {
+  display: block;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--color-dark);
+}
+
+/* На широких экранах (от 768px) кнопка не нужна: меню помещается в строку.
+   Остальная адаптация под планшет и компьютер — на этапе 6. */
+@media (min-width: 768px) {
+  .js .burger {
+    display: none;
+  }
+
+  .js .nav {
+    display: block;
+    position: static;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .js .nav__list {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .js .nav__list a {
+    padding: 0;
+    font-size: 1rem;
+    border: none;
+  }
+}
+
+
+/* ---------- 6. Главный экран ---------- */
+.hero {
+  padding: calc(var(--space) * 4) var(--page-x);
+  background-color: var(--color-black);
+  color: var(--color-beige);
+}
+
+/* Крупный круглый логотип. На телефоне — над текстом.
+   box-shadow рисует вокруг круга тонкое полупрозрачное бежевое кольцо */
+.hero__logo {
+  display: block;
+  width: 160px;
+  height: auto;
+  margin-bottom: calc(var(--space) * 1.5);
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(232, 220, 200, 0.15);
+}
+
+.hero__label {
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.hero__title {
+  font-size: 2.5rem;
+  color: var(--color-bg);
+}
+
+.hero__text {
+  font-size: 1.1rem;
+}
+
+.hero__hours {
+  font-weight: 700;
+}
+
+.hero__buttons {
+  display: flex;
+  flex-direction: column; /* на телефоне кнопки друг под другом, во всю ширину */
+  gap: 12px;
+  margin-top: calc(var(--space) * 1.5);
+}
+
+
+/* ---------- 7. Преимущества ---------- */
+.features__list {
+  display: grid;
+  gap: var(--space);
+}
+
+.feature {
+  padding: calc(var(--space) * 1.25);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+}
+
+.feature__text {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+
+/* ---------- 8. Меню ---------- */
+
+/* Категория въезжает сбоку на 24px. clip обрезает её края на время анимации,
+   чтобы на телефоне не мелькала горизонтальная прокрутка. */
+.menu {
+  overflow-x: clip;
+}
+
+.menu__category {
+  margin-top: calc(var(--space) * 2);
+}
+
+.menu__time {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* Позиция меню: название слева, цена справа, описание строкой ниже.
+   Сетка (grid) из двух колонок: «1fr» — всё свободное место, «auto» — по ширине цены. */
+.menu__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.menu__name {
+  font-weight: 700;
+}
+
+.menu__price {
+  font-weight: 800;
+  color: var(--color-accent);
+  white-space: nowrap; /* «200 ₽» не разорвётся на две строки */
+}
+
+.menu__desc {
+  grid-column: 1 / -1; /* описание растягивается на обе колонки */
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+/* Фирменный напиток выделяем фоном */
+.menu__item--signature {
+  margin: 8px 0;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  background-color: var(--color-beige);
+}
+
+.menu__badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.menu__note {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+/* --- Вкладки меню (создаются скриптом) ---
+   Переключатель «сегментами»: 4 равные колонки на бежевой подложке.
+   repeat(4, 1fr) — четыре колонки одинаковой ширины. */
+.menu__tabs {
+  position: relative; /* точка отсчёта для скользящей подложки */
+  display: grid;
+  grid-template-columns: repeat(var(--tab-count, 4), 1fr);
+  gap: 4px;
+  margin-top: var(--space);
+  padding: 4px;
+  border-radius: var(--radius);
+  background-color: var(--color-beige);
+}
+
+.menu__tab {
+  position: relative;
+  z-index: 1; /* текст вкладки — поверх подложки */
+  min-height: 44px; /* удобно нажимать пальцем */
+  padding: 8px 4px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-black);
+  font-family: inherit; /* кнопки по умолчанию не наследуют шрифт страницы */
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.3s, transform 0.15s;
+}
+
+.menu__tab:not([aria-selected="true"]):hover {
+  background-color: rgba(26, 26, 26, 0.08);
+}
+
+/* Отклик на нажатие: вкладка слегка «проседает» */
+.menu__tab:active {
+  transform: scale(0.95);
+}
+
+/* Активная вкладка — светлый текст. Тёмный фон под ней рисует подложка.
+   Стиль зависит от aria-selected, который выставляет скрипт. */
+.menu__tab[aria-selected="true"] {
+  color: var(--color-bg);
+}
+
+/* Скользящая подложка: один тёмный прямоугольник шириной в одну вкладку.
+   Скрипт сообщает номер активной вкладки (--active-index), а CSS сдвигает
+   подложку на столько ширин вкладки (+ промежуток 4px). transition делает сдвиг плавным. */
+.menu__tabs-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px - (var(--tab-count, 4) - 1) * 4px) / var(--tab-count, 4));
+  border-radius: 8px;
+  background-color: var(--color-black);
+  transform: translateX(calc(var(--active-index, 0) * (100% + 4px)));
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Появление категории. data-direction выставляет скрипт:
+   next — пришли со вкладки левее, категория въезжает справа; prev — наоборот. */
+@keyframes tab-in-next {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes tab-in-prev {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Позиции меню всплывают «лесенкой»: у каждой своя задержка
+   --i × 40мс (номер --i проставляет скрипт) */
+@keyframes item-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.menu__category[data-direction="next"] {
+  animation: tab-in-next 0.35s ease-out both;
+}
+
+.menu__category[data-direction="prev"] {
+  animation: tab-in-prev 0.35s ease-out both;
+}
+
+.menu__category[data-direction] .menu__item,
+.menu__category[data-direction] .menu__note {
+  animation: item-in 0.35s ease-out both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* Отключили анимации в системе — показываем всё сразу, без движения */
+@media (prefers-reduced-motion: reduce) {
+  .menu__tabs-indicator,
+  .menu__tab {
+    transition: none;
+  }
+
+  .menu__category[data-direction],
+  .menu__category[data-direction] .menu__item,
+  .menu__category[data-direction] .menu__note {
+    animation: none;
+  }
+}
+
+/* Панель вкладки можно выделить клавишей Tab — показываем рамку */
+.menu__category:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+
+/* ---------- 9. Заказ с собой ---------- */
+.order {
+  background-color: var(--color-beige);
+}
+
+/* Нумерация шагов в кружках. counter — встроенный в CSS счётчик:
+   он сам считает шаги 1, 2, 3, а мы рисуем номер через ::before. */
+.order__steps {
+  counter-reset: step;
+  display: grid;
+  gap: var(--space);
+  margin: calc(var(--space) * 1.5) 0;
+}
+
+.order__step {
+  counter-increment: step;
+  position: relative;
+  padding-left: 56px;
+}
+
+.order__step::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-black);
+  color: var(--color-beige);
+  font-weight: 800;
+  line-height: 40px;
+  text-align: center;
+}
+
+.order__step h3 {
+  margin-bottom: 4px;
+}
+
+.order__step p {
+  margin: 0;
+}
+
+
+/* ---------- 10. Акции ---------- */
+.promo {
+  background-color: var(--color-black);
+  color: var(--color-beige);
+}
+
+.promo__list {
+  display: grid;
+  gap: var(--space);
+}
+
+.promo__card {
+  padding: calc(var(--space) * 1.25);
+  border-radius: var(--radius);
+  background-color: var(--color-dark);
+}
+
+.promo__card h3 {
+  color: var(--color-bg);
+}
+
+.promo__card p {
+  margin: 0;
+}
+
+
+/* ---------- 11. Контакты ---------- */
+.contacts__grid {
+  display: grid;
+  gap: calc(var(--space) * 2);
+}
+
+.contacts p {
+  margin-bottom: 8px;
+}
+
+.contacts small {
+  color: var(--color-muted);
+}
+
+.contacts__schedule {
+  margin-top: 4px;
+  color: var(--color-muted);
+}
+
+/* Кнопки маршрута: на телефоне друг под другом во всю ширину */
+.contacts__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: calc(var(--space) * 1.5);
+}
+
+/* Вариант кнопки «рамка» для светлого фона
+   (button--outline рассчитан на тёмный фон главного экрана) */
+.button--ghost {
+  background-color: transparent;
+  border-color: var(--color-black);
+  color: var(--color-black);
+}
+
+.button--ghost:hover {
+  background-color: var(--color-black);
+  border-color: var(--color-black);
+  color: var(--color-bg);
+}
+
+.contacts__subtitle {
+  margin-top: calc(var(--space) * 2);
+  margin-bottom: 4px;
+}
+
+.contacts__social-text {
+  color: var(--color-muted);
+}
+
+.social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Соцсети — «таблетки»: высота 44px, удобно нажимать */
+.social__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background-color: var(--color-surface);
+  color: var(--color-black);
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.social__link:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-beige);
+}
+
+/* Карта: скруглённые углы и фиксированная высота на телефоне */
+.contacts__map {
+  overflow: hidden; /* обрезает углы карты по скруглению */
+  min-height: 320px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-line);
+  background-color: var(--color-beige); /* виден, пока карта грузится */
+}
+
+.contacts__map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border: 0;
+}
+
+/* Надпись «Загружаем карту…» нужна только со скриптом:
+   без JS сразу показывается карта из <noscript> */
+.contacts__map-loading {
+  display: none;
+}
+
+.js .contacts__map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  margin: 0;
+  color: var(--color-muted);
+}
+
+/* «Сейчас открыто / закрыто»: точка-индикатор + текст.
+   Пустой (без JS) — не занимает места. */
+.open-status:empty {
+  display: none;
+}
+
+.open-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.open-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #9E9E9E;
+}
+
+.open-status--open::before {
+  background-color: #4CAF50; /* зелёный — открыто */
+}
+
+.open-status--closed::before {
+  background-color: #E57373; /* красный — закрыто */
+}
+
+
+/* ---------- 12. Подвал ---------- */
+.footer {
+  padding: calc(var(--space) * 2) var(--page-x);
+  background-color: var(--color-black);
+  color: var(--color-beige);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.footer p {
+  margin: 0 0 4px;
+}
+
+.footer__note {
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   13. АДАПТИВ: планшет и компьютер
+   @media (min-width: …) — «если экран не уже чем …».
+   Мобильные стили выше действуют везде, а здесь мы только
+   дополняем их для широких экранов (подход mobile-first).
+   ========================================================= */
+
+/* ---------- Планшет: от 768px ---------- */
+@media (min-width: 768px) {
+  .features,
+  .menu,
+  .order,
+  .promo,
+  .contacts {
+    padding-top: calc(var(--space) * 4);
+    padding-bottom: calc(var(--space) * 4);
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  /* Главный экран: крупнее заголовок, кнопки в строку */
+  .hero {
+    padding-top: calc(var(--space) * 6);
+    padding-bottom: calc(var(--space) * 6);
+  }
+
+  .hero__title {
+    font-size: 3.5rem;
+  }
+
+  .hero__logo {
+    width: 200px;
+  }
+
+  .hero__text {
+    max-width: 560px; /* длинные строки тяжело читать — ограничиваем ширину */
+    font-size: 1.2rem;
+  }
+
+  .hero__buttons {
+    flex-direction: row;
+  }
+
+  /* Карточки — по две в ряд */
+  .features__list,
+  .promo__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Три шага заказа — в одну строку */
+  .order__steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Вкладки не растягиваем на всю ширину */
+  .menu__tabs {
+    max-width: 560px;
+  }
+
+  .menu__tab {
+    font-size: 1rem;
+  }
+
+  /* Кнопки маршрута — в строку */
+  .contacts__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- Компьютер: от 1024px ---------- */
+@media (min-width: 1024px) {
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  .hero__title {
+    font-size: 4.5rem;
+  }
+
+  /* Главный экран в две колонки: текст слева, логотип справа.
+     В HTML логотип идёт первым, поэтому явно ставим его во 2-ю колонку */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: calc(var(--space) * 4);
+  }
+
+  .hero__logo {
+    grid-column: 2;
+    grid-row: 1;
+    width: 360px;
+    margin-bottom: 0;
+  }
+
+  /* Карточки — по четыре в ряд */
+  .features__list,
+  .promo__list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Позиции меню — в две колонки */
+  .menu__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: calc(var(--space) * 3);
+  }
+
+  /* Фирменный напиток — во всю ширину, чтобы выделялся */
+  .menu__item--signature {
+    grid-column: 1 / -1;
+  }
+
+  .menu__note {
+    max-width: 720px;
+  }
+
+  /* Контакты в две колонки: информация слева, карта справа
+     и растягивается по высоте колонки с информацией */
+  .contacts__grid {
+    grid-template-columns: 1fr 1.2fr;
+    align-items: stretch;
+  }
+}
